@@ -5,22 +5,22 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sa-movement-rnd", "sa-movement-rnd\sa-movement-rnd.vcxproj", "{024E2C01-344B-474B-9D0C-8A03AB2BC644}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sadx-movement-rnd", "sadx-movement-rnd\sadx-movement-rnd.vcxproj", "{A699E8B1-6E62-4886-9A61-B0508C33EC60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Debug|x64.ActiveCfg = Debug|x64
-		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Debug|x64.Build.0 = Debug|x64
 		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Debug|x86.ActiveCfg = Debug|Win32
 		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Debug|x86.Build.0 = Debug|Win32
-		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Release|x64.ActiveCfg = Release|x64
-		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Release|x64.Build.0 = Release|x64
 		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Release|x86.ActiveCfg = Release|Win32
 		{024E2C01-344B-474B-9D0C-8A03AB2BC644}.Release|x86.Build.0 = Release|Win32
+		{A699E8B1-6E62-4886-9A61-B0508C33EC60}.Debug|x86.ActiveCfg = Debug|Win32
+		{A699E8B1-6E62-4886-9A61-B0508C33EC60}.Debug|x86.Build.0 = Debug|Win32
+		{A699E8B1-6E62-4886-9A61-B0508C33EC60}.Release|x86.ActiveCfg = Release|Win32
+		{A699E8B1-6E62-4886-9A61-B0508C33EC60}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
