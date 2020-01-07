@@ -172,16 +172,10 @@ void sub_443C50(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, in
 
 void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2_* charobj)
 {
-	float v13; // st7
-	float v14; // ecx
-	float v15; // edx
-	float v16; // st7
-	float v18; // st7
+	float new_speed_z; // st7
 	float v19; // st7
-	float speed_x_; // st6
-	float speed_x; // st6
 	float new_speed_x; // st6
-	Angle y_rotation; // esi
+	Angle rotation_y; // esi
 	float v37; // st7
 	float v38; // st7
 	float analog_magnitude; // st7
@@ -192,8 +186,6 @@ void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2
 	float v55; // st7
 	float v56; // st7
 	Angle angle; // [esp+8h] [ebp-2Ch]
-	NJS_VECTOR new_speed; // [esp+10h] [ebp-24h]
-	NJS_VECTOR v64; // [esp+1Ch] [ebp-18h]
 	NJS_VECTOR v67; // [esp+28h] [ebp-Ch]
 	float a1a; // [esp+38h] [ebp+4h]
 	float a1b; // [esp+38h] [ebp+4h]
@@ -219,17 +211,13 @@ void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2
 		return;
 	}
 
-	v13 = Gravity.x * charobj->PhysicsData.Gravity;
-	v14 = a2->SomeCollisionVector.y;
-	v15 = a2->SomeCollisionVector.z;
-	new_speed.x = a2->SomeCollisionVector.x;
-	new_speed.y = v14;
-	new_speed.z = v15;
-	new_speed.x = v13 + new_speed.x;
-	v16 = Gravity.y * charobj->PhysicsData.Gravity;
-	v64 = { 0.0f, 0.0f, 0.0f };
-	new_speed.y = v16 + v14;
-	new_speed.z = Gravity.z * charobj->PhysicsData.Gravity + v15;
+	NJS_VECTOR v64 {}; // [esp+1Ch] [ebp-18h]
+
+	NJS_VECTOR new_speed = {
+		(Gravity.x * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.x,
+		(Gravity.y * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.y,
+		(Gravity.z * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.z
+	};
 
 	sub_43EC00(entity, &new_speed);
 
@@ -240,7 +228,7 @@ void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2
 
 	if (charobj->Up < 0.1f && fabs(v67.y) > 0.60000002f && charobj->Speed.x > 1.16f)
 	{
-		v18 = 0.0f;
+		new_speed_z = 0.0f;
 		new_speed.x = 0.0f;
 		new_speed.y = -charobj->PhysicsData.Gravity;
 		goto LABEL_16;
@@ -254,7 +242,7 @@ void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2
 		new_speed.y = new_speed.y - v19;
 
 	LABEL_15:
-		v18 = new_speed.z;
+		new_speed_z = new_speed.z;
 		goto LABEL_16;
 	}
 
@@ -283,30 +271,29 @@ void __cdecl HandleFloorVelocity(EntityData1* entity, EntityData2_* a2, CharObj2
 				goto LABEL_15;
 			}
 
-			v18 = new_speed.z * 1.4f;
+			new_speed_z = new_speed.z * 1.4f;
 		}
 		else
 		{
-			v18 = new_speed.z + new_speed.z;
+			new_speed_z = new_speed.z + new_speed.z;
 		}
 	}
 	else
 	{
 		new_speed.x = new_speed.x * 4.2249999f;
-		v18 = new_speed.z * 4.2249999f;
+		new_speed_z = new_speed.z * 4.2249999f;
 	}
 
 LABEL_16:
-	speed_x_ = charobj->Speed.x;
 	if (have_analog)
 	{
-		if (speed_x_ > charobj->PhysicsData.MaxAccel && charobj->Up > 0.95999998f)
+		if (charobj->Speed.x > charobj->PhysicsData.MaxAccel && charobj->Up > 0.95999998f)
 		{
 			new_speed_x = (charobj->Speed.x - charobj->PhysicsData.MaxAccel) * charobj->PhysicsData.RollDecel * 1.7f;
 			goto LABEL_43;
 		}
 	}
-	else if (speed_x_ > charobj->PhysicsData.RollEnd)
+	else if (charobj->Speed.x > charobj->PhysicsData.RollEnd)
 	{
 	LABEL_42:
 		new_speed_x = charobj->PhysicsData.RollDecel * charobj->Speed.x;
@@ -315,12 +302,11 @@ LABEL_16:
 
 	//v21 = charobj->Speed.x;
 	//v23 = charobj->PhysicsData.MaxAccel;
-	speed_x = charobj->Speed.x;
 
 	// if (c0 | c3)
 	if (charobj->Speed.x <= charobj->PhysicsData.MaxAccel)
 	{
-		if (speed_x >= 0.0f)
+		if (charobj->Speed.x >= 0.0f)
 		{
 			goto LABEL_44;
 		}
@@ -328,21 +314,21 @@ LABEL_16:
 		goto LABEL_42;
 	}
 
-	new_speed_x = (speed_x - charobj->PhysicsData.MaxAccel) * charobj->PhysicsData.RollDecel;
+	new_speed_x = (charobj->Speed.x - charobj->PhysicsData.MaxAccel) * charobj->PhysicsData.RollDecel;
 
 LABEL_43:
 	new_speed.x = new_speed_x + new_speed.x;
 
 LABEL_44:
 	new_speed.y = charobj->PhysicsData.GravityAdd * charobj->Speed.y + new_speed.y;
-	new_speed.z = charobj->PhysicsData.HitSpeed * charobj->Speed.z + v18;
+	new_speed.z = charobj->PhysicsData.HitSpeed * charobj->Speed.z + new_speed_z;
 
 	if (have_analog)
 	{
 		if (entity->Status & Status_OnPath)
 		{
 			FollowSpline((CharObj2*)charobj, (EntityData2*)a2, entity);
-			y_rotation = a2->Forward.y;
+			rotation_y = a2->Forward.y;
 			v64.y = -0.80000001f;
 		}
 		else
@@ -355,7 +341,7 @@ LABEL_44:
 				}
 			}
 
-			y_rotation = angle;
+			rotation_y = angle;
 		}
 
 		// if (c0 | c2)
@@ -378,13 +364,13 @@ LABEL_44:
 					analog_magnitude = 0.0;
 
 				LABEL_78:
-					v48 = BAMS_Subtract(entity->Rotation.y, y_rotation);
+					v48 = BAMS_Subtract(entity->Rotation.y, rotation_y);
 
 					if (charobj->Speed.x == 0.0f && v48 > 4096)
 					{
-						a2->Forward.y = y_rotation;
+						a2->Forward.y = rotation_y;
 						analog_magnitude = 0.0f;
-						sub_443DF0(charobj, entity, a2, y_rotation);
+						sub_443DF0(charobj, entity, a2, rotation_y);
 
 					LABEL_96:
 						a2->field_34 = analog_magnitude;
@@ -396,15 +382,15 @@ LABEL_44:
 					{
 						if (charobj->Speed.x >= charobj->PhysicsData.RollCancel && v48 < 4096)
 						{
-							a2->Forward.y = y_rotation;
-							sub_443E60(entity, charobj, a2, y_rotation);
+							a2->Forward.y = rotation_y;
+							sub_443E60(entity, charobj, a2, rotation_y);
 							goto LABEL_96;
 						}
 
 						if (charobj->Speed.x >= charobj->PhysicsData.Run2 && charobj->SurfaceFlags & 0x800000)
 						{
-							a2->Forward.y = y_rotation;
-							sub_443E60(entity, charobj, a2, y_rotation);
+							a2->Forward.y = rotation_y;
+							sub_443E60(entity, charobj, a2, rotation_y);
 							goto LABEL_96;
 						}
 
@@ -415,15 +401,15 @@ LABEL_44:
 							analog_magnitude = analog_magnitude * 0.80000001f;
 						}
 
-						a2->Forward.y = y_rotation;
+						a2->Forward.y = rotation_y;
 					}
 					else
 					{
-						a2->Forward.y = y_rotation;
+						a2->Forward.y = rotation_y;
 						analog_magnitude = charobj->PhysicsData.GroundDecel;
 					}
 
-					sub_443C50(charobj, entity, a2, y_rotation);
+					sub_443C50(charobj, entity, a2, rotation_y);
 					goto LABEL_96;
 				}
 				goto LABEL_67;
@@ -710,7 +696,7 @@ LABEL_169:
 extern "C"
 {
 	__declspec(dllexport) ModInfo SADXModInfo = { ModLoaderVer, nullptr, nullptr, 0, nullptr, 0, nullptr, 0, nullptr, 0 };
-	__declspec(dllexport) void __cdecl Init(const char* path, const HelperFunctions& helperFunctions)
+	__declspec(dllexport) void __cdecl Init(const char* /*path*/, const HelperFunctions& /*helperFunctions*/)
 	{
 		WriteJump(reinterpret_cast<void*>(0x0044C270), HandleFloorVelocity);
 	}
