@@ -5,95 +5,21 @@
 // ReSharper disable CppClangTidyCppcoreguidelinesAvoidGoto
 // ReSharper disable CppClangTidyHicppAvoidGoto
 
+// Standard functions
+
 FunctionPointer(float, sub_447510, (EntityData1 *arg0, EntityData2_ *arg4, CharObj2_ *a3), 0x00447510);
 FunctionPointer(float, sub_447010, (EntityData1 *data1, EntityData2_ *data2_pp, CharObj2_ *data2), 0x447010);
 FunctionPointer(void, sub_43EC00, (EntityData1 *a1, NJS_VECTOR *vd), 0x43EC00);
 FunctionPointer(void, sub_4491E0, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
 FastcallFunctionPointer(double, sub_7889F0, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
 
-void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0)
-{
-	// ReSharper disable once CppDeclaratorNeverUsed
-	auto func = reinterpret_cast<void*>(0x44B0E0);
+// Usercall functions - definitions below HandleGroundVelocity
 
-	__asm
-	{
-		push arg_0
-		mov eax, eax0
-		mov ecx, a1
-
-		call func
-
-		add esp, 4
-	}
-}
-
-void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3)
-{
-	// ReSharper disable once CppDeclaratorNeverUsed
-	auto func = reinterpret_cast<void*>(0x449380);
-
-	__asm
-	{
-		mov eax, a1
-		mov esi, a2
-		push a3
-
-		call func
-		add esp, 4
-	}
-}
-
-void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams)
-{
-	// ReSharper disable once CppDeclaratorNeverUsed
-	auto func = reinterpret_cast<void*>(0x443DF0);
-
-	__asm
-	{
-		mov eax, a1
-		mov edi, entity
-		push dword ptr [bams]
-		push a3
-
-		call func
-		add esp, 8
-	}
-}
-
-void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int16 a4)
-{
-	// ReSharper disable once CppDeclaratorNeverUsed
-	auto func = reinterpret_cast<void*>(0x443E60);
-
-	__asm
-	{
-		mov ebx, a1
-		mov esi, a2
-		push dword ptr [a4]
-		push a3
-
-		call func
-		add esp, 8
-	}
-}
-
-void RotateTowards(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, int a4)
-{
-	// ReSharper disable once CppDeclaratorNeverUsed
-	auto func = reinterpret_cast<void*>(0x443C50);
-
-	__asm
-	{
-		mov edi, charobj2
-		mov esi, data1
-		push a4
-		push data2
-
-		call func
-		add esp, 8
-	}
-}
+void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
+void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
+void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
+void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int16 a4);
+void RotateTowards(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, int a4);
 
 // This function is ported from the HexRays decompiler and had to be repaired. It has been cleaned up significantly.
 // It is not expected that anyone will understand it. If you would like to try, please be my guest. -SF94
@@ -125,14 +51,16 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 	}
 
 	// these are most definitely COL flags
-	int surface_flags = charobj->SurfaceFlags;
+	const int surface_flags = charobj->SurfaceFlags;
 
+	// TODO: use COL flags enum
 	if (surface_flags & 0x20000)
 	{
 		sub_44B0E0(entity, charobj, a2);
 		return;
 	}
 
+	// TODO: use COL flags enum
 	if (surface_flags & 0x4000)
 	{
 		sub_447010(entity, a2, charobj);
@@ -263,6 +191,7 @@ LABEL_44:
 		{
 			if (charobj->Up < 0.94f)
 			{
+				// TODO: use COL flags enum
 				if (charobj->SurfaceFlags & 0x800000)
 				{
 					sub_449380(entity, a2, charobj);
@@ -317,6 +246,7 @@ LABEL_44:
 							goto SET_V64X_TO_STICK_MAG;
 						}
 
+						// TODO: use COL flags enum
 						if (charobj->Speed.x >= charobj->PhysicsData.Run2 && charobj->SurfaceFlags & 0x800000)
 						{
 							a2->Forward.y = rotation_y;
@@ -440,6 +370,7 @@ LABEL_97:
 
 	if (v64.x < 0.0f)
 	{
+		// TODO: use COL flags enum
 		if (!(charobj->SurfaceFlags & 4))
 		{
 			if (charobj->Speed.x <= 0.0f)
@@ -563,6 +494,7 @@ LABEL_145:
 
 	v55 = new_speed.z;
 
+	// TODO: use COL flags enum
 	if (!(charobj->SurfaceFlags & 4))
 	{
 		if (v55 <= 0.0f)
@@ -621,4 +553,98 @@ LABEL_169:
 	add_velocity->x = new_speed.x;
 	add_velocity->y = new_speed.y;
 	add_velocity->z = new_speed.z;
+}
+
+// usercall declaration:
+// void __usercall sub_44B0E0(EntityData1 *a1@<ecx>, CharObj2 *eax0@<eax>, EntityData2 *arg_0)
+void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0)
+{
+	// ReSharper disable once CppDeclaratorNeverUsed
+	auto func = reinterpret_cast<void*>(0x44B0E0);
+
+	__asm
+	{
+		push arg_0
+		mov eax, eax0
+		mov ecx, a1
+
+		call func
+
+		add esp, 4
+	}
+}
+
+// usercall declaration:
+// void __usercall sub_449380(EntityData1 *a1@<eax>, EntityData2 *a2@<esi>, CharObj2 *a3)
+void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3)
+{
+	// ReSharper disable once CppDeclaratorNeverUsed
+	auto func = reinterpret_cast<void*>(0x449380);
+
+	__asm
+	{
+		mov eax, a1
+		mov esi, a2
+		push a3
+
+		call func
+		add esp, 4
+	}
+}
+
+// usercall declaration:
+// void __usercall sub_443DF0(CharObj2 *a1@<eax>, EntityData1 *entity@<edi>, EntityData2 *a3, __int16 bams)
+void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams)
+{
+	// ReSharper disable once CppDeclaratorNeverUsed
+	auto func = reinterpret_cast<void*>(0x443DF0);
+
+	__asm
+	{
+		mov eax, a1
+		mov edi, entity
+		push dword ptr [bams]
+		push a3
+
+		call func
+		add esp, 8
+	}
+}
+
+// usercall declaration:
+// void __usercall sub_443E60(EntityData1 *a1@<ebx>, CharObj2 *a2@<esi>, EntityData2 *a3, unsigned __int16 a4)
+void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int16 a4)
+{
+	// ReSharper disable once CppDeclaratorNeverUsed
+	auto func = reinterpret_cast<void*>(0x443E60);
+
+	__asm
+	{
+		mov ebx, a1
+		mov esi, a2
+		push dword ptr [a4]
+		push a3
+
+		call func
+		add esp, 8
+	}
+}
+
+// usercall declaration:
+// void __usercall RotateTowards(CharObj2 *charobj2@<edi>, EntityData1 *data1@<esi>, EntityData2 *data2, int target_angle)
+void RotateTowards(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, int a4)
+{
+	// ReSharper disable once CppDeclaratorNeverUsed
+	auto func = reinterpret_cast<void*>(0x443C50);
+
+	__asm
+	{
+		mov edi, charobj2
+		mov esi, data1
+		push a4
+		push data2
+
+		call func
+		add esp, 8
+	}
 }
