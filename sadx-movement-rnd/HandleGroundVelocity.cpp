@@ -18,8 +18,8 @@ FastcallFunctionPointer(double, sub_7889F0, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS
 void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
 void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
 void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
-void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int16 a4);
-void RotateTowards(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, int a4);
+void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4);
+void RotateTowards(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4);
 
 // This function is ported from the HexRays decompiler and had to be repaired. It has been cleaned up significantly.
 // It is not expected that anyone will understand it. If you would like to try, please be my guest. -SF94
@@ -360,7 +360,7 @@ LABEL_97:
 		new_speed.x = new_speed.x + v64.x;
 
 		if (!have_analog && (new_speed.x < (float)a1a && -a1a < new_speed.x
-		             || new_speed.x < 0.050999999f && new_speed.x > -0.050999999f))
+		                     || new_speed.x < 0.050999999f && new_speed.x > -0.050999999f))
 		{
 			new_speed.x = 0.0f;
 		}
@@ -550,6 +550,7 @@ LABEL_169:
 	new_speed.y = new_speed.y + v64.y;
 
 	auto add_velocity = &charobj->AddVelocity;
+
 	add_velocity->x = new_speed.x;
 	add_velocity->y = new_speed.y;
 	add_velocity->z = new_speed.z;
@@ -613,7 +614,7 @@ void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 ba
 
 // usercall declaration:
 // void __usercall sub_443E60(EntityData1 *a1@<ebx>, CharObj2 *a2@<esi>, EntityData2 *a3, unsigned __int16 a4)
-void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int16 a4)
+void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x443E60);
@@ -632,7 +633,7 @@ void sub_443E60(EntityData1 *a1, CharObj2_ *a2, EntityData2_ *a3, unsigned __int
 
 // usercall declaration:
 // void __usercall RotateTowards(CharObj2 *charobj2@<edi>, EntityData1 *data1@<esi>, EntityData2 *data2, int target_angle)
-void RotateTowards(CharObj2_ *charobj2, EntityData1 *data1, EntityData2_ *data2, int a4)
+void RotateTowards(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x443C50);
