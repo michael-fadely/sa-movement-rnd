@@ -407,12 +407,10 @@ LABEL_97:
 
 				if (v52 < 0.0f)
 				{
-					*(float*)&angle = -a1b;
-
-					if (v52 < *(float*)&angle)
+					if (v52 < -a1b)
 					{
 						a2->field_38 = v52 - a1b;
-						v52 = *(float*)&angle;
+						v52 = -a1b;
 					LABEL_144:
 						new_speed.x = v52;
 						goto LABEL_145;
