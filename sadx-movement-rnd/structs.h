@@ -22,6 +22,43 @@ struct charobj2_arraything
 	NJS_VECTOR njs_vector6C;
 };
 
+struct PhysicsData_
+{
+	int   jump2_timer;    // HangTime -> jump2_timer
+	float pos_error;      // FloorGrip -> pos_error
+	float lim_h_spd;      // HSpeedCap -> lim_h_spd
+	float lim_v_spd;      // VSpeedCap -> lim_v_spd
+	float max_x_spd;      // MaxAccel -> max_x_spd
+	float max_psh_spd;    // max_psh_spd
+	float jmp_y_spd;      // JumpSpeed -> jmp_y_spd
+	float nocon_speed;    // SpringControl -> nocon_speed
+	float slide_speed;    // slide_speed
+	float jog_speed;      // RollCancel -> jog_speed
+	float run_speed;      // RollEnd -> run_speed
+	float rush_speed;     // Run1 -> rush_speed
+	float crash_speed;    // Knockback -> crash_speed
+	float dash_speed;     // Run2 -> dash_speed
+	float jmp_addit;      // JumpAddSpeed -> jmp_addit
+	float run_accel;      // GroundAccel -> run_accel
+	float air_accel;      // AirAccel -> air_accel
+	float slow_down;      // GroundDecel -> slow_down
+	float run_break;      // Brake -> run_break
+	float air_break;      // AirBrake -> air_break
+	float air_resist_air; // AirDecel -> air_resist_air
+	float air_resist;     // RollDecel -> air_resist
+	float air_resist_y;   // GravityAdd -> air_resist_y
+	float air_resist_z;   // HitSpeed -> air_resist_z
+	float grd_frict;      // MinSpeed -> grd_frict
+	float grd_frict_z;    // grd_frict_z
+	float lim_frict;      // lim_frict
+	float rat_bound;      // rat_bound
+	float rad;            // RippleSize -> rad
+	float height;         // CollisionSize -> height
+	float weight;         // Gravity -> weight
+	float eyes_height;    // CameraY -> eyes_height
+	float center_height;  // YOff -> center_height
+};
+
 struct CharObj2_
 {
 	float SpindashSpeed;
@@ -57,7 +94,7 @@ struct CharObj2_
 	NJS_VECTOR field_88;
 	float SomeFrameNumberThing;
 	float TailsFlightTime;
-	PhysicsData PhysicsData;
+	PhysicsData_ PhysicsData;
 	AnimThing AnimationThing;
 	NJS_VECTOR SoManyVectors[12];
 	struct_a3 _struct_a3;

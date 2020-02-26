@@ -7,15 +7,15 @@
 
 // Standard functions
 
-FunctionPointer(float, sub_447510, (EntityData1 *arg0, EntityData2_ *arg4, CharObj2_ *a3), 0x00447510);
-FunctionPointer(float, sub_447010, (EntityData1 *data1, EntityData2_ *data2_pp, CharObj2_ *data2), 0x447010);
+FunctionPointer(float, PGetAccelerationAuto, (EntityData1 *arg0, EntityData2_ *arg4, CharObj2_ *a3), 0x00447510);
+FunctionPointer(float, PGetAccelerationStair, (EntityData1 *data1, EntityData2_ *data2_pp, CharObj2_ *data2), 0x447010);
 FunctionPointer(void, sub_43EC00, (EntityData1 *a1, NJS_VECTOR *vd), 0x43EC00);
 FunctionPointer(void, sub_4491E0, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
 FastcallFunctionPointer(double, sub_7889F0, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
 
 // Usercall functions - definitions below HandleGroundVelocity
 
-void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
+void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
 void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
 void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
 void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4);
@@ -46,7 +46,7 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 
 	if (entity->Status & Status_DisableControl)
 	{
-		sub_447510(entity, a2, charobj);
+		PGetAccelerationAuto(entity, a2, charobj);
 		return;
 	}
 
@@ -56,23 +56,23 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 	// TODO: use COL flags enum
 	if (surface_flags & 0x20000)
 	{
-		sub_44B0E0(entity, charobj, a2);
+		PGetAccelerationTube(entity, charobj, a2);
 		return;
 	}
 
 	// TODO: use COL flags enum
 	if (surface_flags & 0x4000)
 	{
-		sub_447010(entity, a2, charobj);
+		PGetAccelerationStair(entity, a2, charobj);
 		return;
 	}
 
 	NJS_VECTOR v64 {}; // [esp+1Ch] [ebp-18h]
 
 	NJS_VECTOR new_speed = {
-		(Gravity.x * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.x,
-		(Gravity.y * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.y,
-		(Gravity.z * charobj->PhysicsData.Gravity) + a2->SomeCollisionVector.z
+		(Gravity.x * charobj->PhysicsData.weight) + a2->SomeCollisionVector.x,
+		(Gravity.y * charobj->PhysicsData.weight) + a2->SomeCollisionVector.y,
+		(Gravity.z * charobj->PhysicsData.weight) + a2->SomeCollisionVector.z
 	};
 
 	sub_43EC00(entity, &new_speed);
@@ -82,17 +82,19 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 	NJS_VECTOR* v17 = &charobj->array_1x132->njs_vector1C;
 	sub_7889F0(v17, &a2->VelocityDirection, &v67);
 
+	// unstick from the ground using the weight as the unsticking force, nullify horizontal speed
 	if (charobj->Up < 0.1f && fabs(v67.y) > 0.60000002f && charobj->Speed.x > 1.16f)
 	{
 		new_speed_z = 0.0f;
 		new_speed.x = 0.0f;
-		new_speed.y = -charobj->PhysicsData.Gravity;
+		new_speed.y = -charobj->PhysicsData.weight;
 		goto LABEL_16;
 	}
 
+	// unstick from the ground
 	if (charobj->Up < -0.40000001f && charobj->Speed.x > 1.16f)
 	{
-		v19 = charobj->PhysicsData.Gravity * 5.0f;
+		v19 = charobj->PhysicsData.weight * 5.0f;
 
 	what:
 		new_speed.y = new_speed.y - v19;
@@ -102,27 +104,29 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 		goto LABEL_16;
 	}
 
+	// ditto, different weight multiplier
 	if (charobj->Up < -0.30000001f && charobj->Speed.x > 1.16f)
 	{
-		v19 = charobj->PhysicsData.Gravity * 0.80000001f;
+		v19 = charobj->PhysicsData.weight * 0.80000001f;
 		goto what;
 	}
 
+	// ditto, different weight multiplier
 	if (charobj->Up < -0.1f && charobj->Speed.x > 1.16f)
 	{
-		v19 = charobj->PhysicsData.Gravity * 0.40000001f;
+		v19 = charobj->PhysicsData.weight * 0.40000001f;
 		goto what;
 	}
 
-	if (charobj->Up >= 0.5f || charobj->Speed.x >= (float)charobj->PhysicsData.RollEnd || -charobj->PhysicsData.RollEnd >= charobj->Speed.x)
+	if (charobj->Up >= 0.5f || charobj->Speed.x >= (float)charobj->PhysicsData.run_speed || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
 	{
 		if (charobj->Up >= 0.69999999f
-		    || charobj->Speed.x >= (float)charobj->PhysicsData.RollEnd
-		    || -charobj->PhysicsData.RollEnd >= charobj->Speed.x)
+		    || charobj->Speed.x >= (float)charobj->PhysicsData.run_speed
+		    || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
 		{
 			if (charobj->Up >= 0.87f
-			    || charobj->Speed.x >= (float)charobj->PhysicsData.RollCancel
-			    || -charobj->PhysicsData.RollEnd >= charobj->Speed.x)
+			    || charobj->Speed.x >= (float)charobj->PhysicsData.jog_speed
+			    || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
 			{
 				goto LABEL_15;
 			}
@@ -143,16 +147,16 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 LABEL_16:
 	if (have_analog)
 	{
-		if (charobj->Speed.x > charobj->PhysicsData.MaxAccel && charobj->Up > 0.95999998f)
+		if (charobj->Speed.x > charobj->PhysicsData.max_x_spd && charobj->Up > 0.95999998f)
 		{
-			new_speed_x = (charobj->Speed.x - charobj->PhysicsData.MaxAccel) * charobj->PhysicsData.RollDecel * 1.7f;
+			new_speed_x = (charobj->Speed.x - charobj->PhysicsData.max_x_spd) * charobj->PhysicsData.air_resist * 1.7f;
 			goto LABEL_43;
 		}
 	}
-	else if (charobj->Speed.x > charobj->PhysicsData.RollEnd)
+	else if (charobj->Speed.x > charobj->PhysicsData.run_speed)
 	{
 	LABEL_42:
-		new_speed_x = charobj->PhysicsData.RollDecel * charobj->Speed.x;
+		new_speed_x = charobj->PhysicsData.air_resist * charobj->Speed.x;
 		goto LABEL_43;
 	}
 
@@ -160,7 +164,7 @@ LABEL_16:
 	//v23 = charobj->PhysicsData.MaxAccel;
 
 	// if (c0 | c3)
-	if (charobj->Speed.x <= charobj->PhysicsData.MaxAccel)
+	if (charobj->Speed.x <= charobj->PhysicsData.max_x_spd)
 	{
 		if (charobj->Speed.x >= 0.0f)
 		{
@@ -170,14 +174,14 @@ LABEL_16:
 		goto LABEL_42;
 	}
 
-	new_speed_x = (charobj->Speed.x - charobj->PhysicsData.MaxAccel) * charobj->PhysicsData.RollDecel;
+	new_speed_x = (charobj->Speed.x - charobj->PhysicsData.max_x_spd) * charobj->PhysicsData.air_resist;
 
 LABEL_43:
 	new_speed.x = new_speed_x + new_speed.x;
 
 LABEL_44:
-	new_speed.y = charobj->PhysicsData.GravityAdd * charobj->Speed.y + new_speed.y;
-	new_speed.z = charobj->PhysicsData.HitSpeed * charobj->Speed.z + new_speed_z;
+	new_speed.y = charobj->PhysicsData.air_resist_y * charobj->Speed.y + new_speed.y;
+	new_speed.z = charobj->PhysicsData.air_resist_z * charobj->Speed.z + new_speed_z;
 
 	if (have_analog)
 	{
@@ -202,18 +206,18 @@ LABEL_44:
 		}
 
 		// if (c0 | c2)
-		if (charobj->Speed.x < charobj->PhysicsData.MaxAccel)
+		if (charobj->Speed.x < charobj->PhysicsData.max_x_spd)
 		{
-			if (charobj->Speed.x < charobj->PhysicsData.RollCancel)
+			if (charobj->Speed.x < charobj->PhysicsData.jog_speed)
 			{
 				if (analog_magnitude > 0.5f)
 				{
 				LABEL_67:
-					v38 = analog_magnitude * charobj->PhysicsData.GroundAccel;
+					v38 = analog_magnitude * charobj->PhysicsData.run_accel;
 					goto SET_ANALOG_MAG_TO_V38;
 				}
 
-				v37 = charobj->PhysicsData.RollCancel * 0.40000001f;
+				v37 = charobj->PhysicsData.jog_speed * 0.40000001f;
 
 			LABEL_66:
 				if (v37 <= charobj->Speed.x)
@@ -237,9 +241,9 @@ LABEL_44:
 						goto LABEL_97;
 					}
 
-					if ((charobj->PhysicsData.RollEnd + charobj->PhysicsData.RollCancel) * 0.5f > charobj->Speed.x || angle_delta <= 4096) // 22.5 degrees
+					if ((charobj->PhysicsData.run_speed + charobj->PhysicsData.jog_speed) * 0.5f > charobj->Speed.x || angle_delta <= 4096) // 22.5 degrees
 					{
-						if (charobj->Speed.x >= charobj->PhysicsData.RollCancel && angle_delta < 4096) // 22.5 degrees
+						if (charobj->Speed.x >= charobj->PhysicsData.jog_speed && angle_delta < 4096) // 22.5 degrees
 						{
 							a2->Forward.y = rotation_y;
 							sub_443E60(entity, charobj, a2, rotation_y);
@@ -247,15 +251,15 @@ LABEL_44:
 						}
 
 						// TODO: use COL flags enum
-						if (charobj->Speed.x >= charobj->PhysicsData.Run2 && charobj->SurfaceFlags & 0x800000)
+						if (charobj->Speed.x >= charobj->PhysicsData.dash_speed && charobj->SurfaceFlags & 0x800000)
 						{
 							a2->Forward.y = rotation_y;
 							sub_443E60(entity, charobj, a2, rotation_y);
 							goto SET_V64X_TO_STICK_MAG;
 						}
 
-						if (charobj->Speed.x >= charobj->PhysicsData.RollCancel
-						    && charobj->Speed.x <= charobj->PhysicsData.Run1
+						if (charobj->Speed.x >= charobj->PhysicsData.jog_speed
+						    && charobj->Speed.x <= charobj->PhysicsData.rush_speed
 						    && angle_delta > 8192) // 45 degrees
 						{
 							analog_magnitude = analog_magnitude * 0.80000001f;
@@ -266,7 +270,7 @@ LABEL_44:
 					else
 					{
 						a2->Forward.y = rotation_y;
-						analog_magnitude = charobj->PhysicsData.GroundDecel;
+						analog_magnitude = charobj->PhysicsData.slow_down;
 					}
 
 					RotateTowards(charobj, entity, a2, rotation_y);
@@ -275,27 +279,27 @@ LABEL_44:
 				goto LABEL_67;
 			}
 
-			if (charobj->Speed.x < charobj->PhysicsData.RollEnd)
+			if (charobj->Speed.x < charobj->PhysicsData.run_speed)
 			{
 				if (analog_magnitude > 0.69999999f)
 				{
-					v38 = analog_magnitude * charobj->PhysicsData.GroundAccel;
+					v38 = analog_magnitude * charobj->PhysicsData.run_accel;
 
 				SET_ANALOG_MAG_TO_V38:
 					analog_magnitude = v38;
 					goto LABEL_78;
 				}
 
-				v37 = (charobj->PhysicsData.RollEnd + charobj->PhysicsData.RollEnd) * 0.5f;
+				v37 = (charobj->PhysicsData.run_speed + charobj->PhysicsData.run_speed) * 0.5f;
 				goto LABEL_66;
 			}
 
 			//v39 = charobj->Speed.x;
 			//v41 = charobj->PhysicsData.Run1;
 			// if (c0 | c2)
-			if (charobj->Speed.x < charobj->PhysicsData.Run1)
+			if (charobj->Speed.x < charobj->PhysicsData.rush_speed)
 			{
-				v38 = analog_magnitude * charobj->PhysicsData.GroundAccel;
+				v38 = analog_magnitude * charobj->PhysicsData.run_accel;
 
 				// fcomp 0.89999998
 				// if (c0 | c3)
@@ -309,14 +313,14 @@ LABEL_44:
 		}
 		else
 		{
-			if (charobj->Speed.x < charobj->PhysicsData.MaxAccel || charobj->Up >= 0.0f)
+			if (charobj->Speed.x < charobj->PhysicsData.max_x_spd || charobj->Up >= 0.0f)
 			{
-				v38 = analog_magnitude * charobj->PhysicsData.GroundAccel * 0.40000001f;
+				v38 = analog_magnitude * charobj->PhysicsData.run_accel * 0.40000001f;
 				goto SET_ANALOG_MAG_TO_V38;
 			}
 		}
 
-		v38 = analog_magnitude * charobj->PhysicsData.GroundAccel;
+		v38 = analog_magnitude * charobj->PhysicsData.run_accel;
 		goto SET_ANALOG_MAG_TO_V38;
 	}
 
@@ -326,14 +330,14 @@ LABEL_44:
 		{
 			if (charobj->Speed.x < 0.0f)
 			{
-				v64.x = -charobj->PhysicsData.GroundDecel;
+				v64.x = -charobj->PhysicsData.slow_down;
 			}
 
 			a2->field_34 = 0.0f;
 		}
 		else
 		{
-			v64.x = charobj->PhysicsData.GroundDecel;
+			v64.x = charobj->PhysicsData.slow_down;
 			a2->field_34 = 0.0f;
 		}
 	}
@@ -345,8 +349,8 @@ LABEL_44:
 
 LABEL_97:
 	if (charobj->Up < 0.70999998f
-	    && charobj->Speed.x < (float)charobj->PhysicsData.RollCancel
-	    && -charobj->PhysicsData.RollCancel < charobj->Speed.x
+	    && charobj->Speed.x < (float)charobj->PhysicsData.jog_speed
+	    && -charobj->PhysicsData.jog_speed < charobj->Speed.x
 	    && !have_analog)
 	{
 		new_speed.x = new_speed.x * 10.0f;
@@ -356,7 +360,7 @@ LABEL_97:
 
 	if (charobj->Speed.x == 0.0f)
 	{
-		a1a = charobj->PhysicsData.field_68 * a2->AccelerationMultiplier * new_speed.y;
+		a1a = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * new_speed.y;
 		new_speed.x = new_speed.x + v64.x;
 
 		if (!have_analog && (new_speed.x < (float)a1a && -a1a < new_speed.x
@@ -376,10 +380,10 @@ LABEL_97:
 			if (charobj->Speed.x <= 0.0f)
 			{
 				if (!have_analog
-				    && charobj->Speed.x <= (float)charobj->PhysicsData.RollCancel
+				    && charobj->Speed.x <= (float)charobj->PhysicsData.jog_speed
 				    && new_speed.x < 0.050999999f
 				    && new_speed.x > -0.050999999f
-				    || (v52 = charobj->PhysicsData.field_68 * a2->AccelerationMultiplier * new_speed.y + v64.x, v52 >= 0.0f))
+				    || (v52 = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * new_speed.y + v64.x, v52 >= 0.0f))
 				{
 					v52 = 0.0f;
 				}
@@ -399,7 +403,7 @@ LABEL_97:
 
 		if (new_speed.y < 0.0f)
 		{
-			a1b = charobj->PhysicsData.MinSpeed * a2->AccelerationMultiplier * new_speed.y;
+			a1b = charobj->PhysicsData.grd_frict * a2->AccelerationMultiplier * new_speed.y;
 
 			if (a1b > 0.0f && -v64.x > a1b)
 			{
@@ -436,7 +440,7 @@ LABEL_97:
 		goto LABEL_138;
 	}
 
-	a1b = charobj->PhysicsData.field_68 * a2->AccelerationMultiplier * new_speed.y;
+	a1b = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * new_speed.y;
 
 	if (charobj->Speed.x >= 0.0f || new_speed.x >= 0.050999999f || new_speed.x <= -0.050999999f)
 	{
@@ -448,7 +452,7 @@ LABEL_97:
 
 	LABEL_138:
 		if (!have_analog
-		    && charobj->Speed.x <= charobj->PhysicsData.RollCancel
+		    && charobj->Speed.x <= charobj->PhysicsData.jog_speed
 		    && new_speed.x < 0.050999999f
 		    && new_speed.x > -0.050999999f)
 		{
@@ -471,7 +475,7 @@ LABEL_97:
 LABEL_145:
 	if (charobj->Speed.z == 0.0f)
 	{
-		v54 = charobj->PhysicsData.field_68 * a2->AccelerationMultiplier * new_speed.y;
+		v54 = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * new_speed.y;
 
 		if (new_speed.z < v54 && -v54 < new_speed.z)
 		{
@@ -487,7 +491,7 @@ LABEL_145:
 	}
 	else
 	{
-		a1c = charobj->PhysicsData.field_64 * a2->AccelerationMultiplier * new_speed.y;
+		a1c = charobj->PhysicsData.grd_frict_z * a2->AccelerationMultiplier * new_speed.y;
 	}
 
 	v55 = new_speed.z;
@@ -556,7 +560,7 @@ LABEL_169:
 
 // usercall declaration:
 // void __usercall sub_44B0E0(EntityData1 *a1@<ecx>, CharObj2 *eax0@<eax>, EntityData2 *arg_0)
-void sub_44B0E0(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0)
+void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x44B0E0);
