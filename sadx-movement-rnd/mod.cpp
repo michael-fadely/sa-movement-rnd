@@ -1,5 +1,5 @@
 #include <SADXModLoader.h>
-#include "HandleGroundVelocity.h"
+#include "PGetAcceleration.h"
 
 #define EXPORT __declspec(dllexport)
 

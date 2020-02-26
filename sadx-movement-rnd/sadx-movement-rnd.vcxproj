@@ -83,11 +83,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HandleGroundVelocity.cpp" />
+    <ClCompile Include="PGetAcceleration.cpp" />
     <ClCompile Include="mod.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HandleGroundVelocity.h" />
+    <ClInclude Include="PGetAcceleration.h" />
     <ClInclude Include="structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

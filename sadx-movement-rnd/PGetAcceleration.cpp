@@ -1,6 +1,6 @@
 #include <cmath>
 #include <SADXModLoader.h>
-#include "HandleGroundVelocity.h"
+#include "PGetAcceleration.h"
 
 // ReSharper disable CppClangTidyCppcoreguidelinesAvoidGoto
 // ReSharper disable CppClangTidyHicppAvoidGoto
@@ -13,7 +13,7 @@ FunctionPointer(void, PConvertVector_G2P, (EntityData1 *a1, NJS_VECTOR *vd), 0x4
 FunctionPointer(void, PRotatedByGravity, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
 FastcallFunctionPointer(double, njOuterProduct, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
 
-// Usercall functions - definitions below HandleGroundVelocity
+// Usercall functions - definitions below PGetAcceleration
 
 void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
 void PRotatedByGravityS(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
