@@ -109,7 +109,7 @@ struct __declspec(align(4)) EntityData2_
 	int32_t field_28;
 	int32_t field_2C;
 	int32_t field_30;
-	float field_34;
+	float force;
 	float field_38;
 	float AccelerationMultiplier;
 };
