@@ -9,21 +9,21 @@
 
 FunctionPointer(float, PGetAccelerationAuto, (EntityData1 *arg0, EntityData2_ *arg4, CharObj2_ *a3), 0x00447510);
 FunctionPointer(float, PGetAccelerationStair, (EntityData1 *data1, EntityData2_ *data2_pp, CharObj2_ *data2), 0x447010);
-FunctionPointer(void, sub_43EC00, (EntityData1 *a1, NJS_VECTOR *vd), 0x43EC00);
-FunctionPointer(void, sub_4491E0, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
-FastcallFunctionPointer(double, sub_7889F0, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
+FunctionPointer(void, PConvertVector_G2P, (EntityData1 *a1, NJS_VECTOR *vd), 0x43EC00);
+FunctionPointer(void, PRotatedByGravity, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
+FastcallFunctionPointer(double, njOuterProduct, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
 
 // Usercall functions - definitions below HandleGroundVelocity
 
 void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
-void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
-void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
-void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4);
-void RotateTowards(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4);
+void PRotatedByGravityS(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
+void PAdjustAngleYQ(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
+void PAdjustAngleYS(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4);
+void PAdjustAngleY(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4);
 
 // This function is ported from the HexRays decompiler and had to be repaired. It has been cleaned up significantly.
 // It is not expected that anyone will understand it. If you would like to try, please be my guest. -SF94
-void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj2_* charobj)
+void __cdecl PGetAcceleration(EntityData1* entity, EntityData2_* a2, CharObj2_* charobj)
 {
 	float new_speed_z; // st7
 	float v19; // st7
@@ -75,12 +75,13 @@ void __cdecl HandleGroundVelocity(EntityData1* entity, EntityData2_* a2, CharObj
 		(Gravity.z * charobj->PhysicsData.weight) + a2->SomeCollisionVector.z
 	};
 
-	sub_43EC00(entity, &new_speed);
+	PConvertVector_G2P(entity, &new_speed);
 
+	// aka PCheckPower
 	const bool have_analog = GetAnalog(entity, &angle, &analog_magnitude);
 
 	NJS_VECTOR* v17 = &charobj->array_1x132->njs_vector1C;
-	sub_7889F0(v17, &a2->VelocityDirection, &v67);
+	njOuterProduct(v17, &a2->VelocityDirection, &v67);
 
 	// unstick from the ground using the weight as the unsticking force, nullify horizontal speed
 	if (charobj->Up < 0.1f && fabs(v67.y) > 0.60000002f && charobj->Speed.x > 1.16f)
@@ -187,6 +188,7 @@ LABEL_44:
 	{
 		if (entity->Status & Status_OnPath)
 		{
+			// aka PGetRotationYAlongThePath
 			FollowSpline((CharObj2*)charobj, (EntityData2*)a2, entity);
 			rotation_y = a2->Forward.y;
 			v64.y = -0.80000001f;
@@ -198,7 +200,7 @@ LABEL_44:
 				// TODO: use COL flags enum
 				if (charobj->SurfaceFlags & 0x800000)
 				{
-					sub_449380(entity, a2, charobj);
+					PRotatedByGravityS(entity, a2, charobj);
 				}
 			}
 
@@ -233,7 +235,7 @@ LABEL_44:
 					{
 						a2->Forward.y = rotation_y;
 						analog_magnitude = 0.0f;
-						sub_443DF0(charobj, entity, a2, rotation_y);
+						PAdjustAngleYQ(charobj, entity, a2, rotation_y);
 
 					SET_V64X_TO_STICK_MAG:
 						a2->field_34 = analog_magnitude;
@@ -246,7 +248,7 @@ LABEL_44:
 						if (charobj->Speed.x >= charobj->PhysicsData.jog_speed && angle_delta < 4096) // 22.5 degrees
 						{
 							a2->Forward.y = rotation_y;
-							sub_443E60(entity, charobj, a2, rotation_y);
+							PAdjustAngleYS(entity, charobj, a2, rotation_y);
 							goto SET_V64X_TO_STICK_MAG;
 						}
 
@@ -254,7 +256,7 @@ LABEL_44:
 						if (charobj->Speed.x >= charobj->PhysicsData.dash_speed && charobj->SurfaceFlags & 0x800000)
 						{
 							a2->Forward.y = rotation_y;
-							sub_443E60(entity, charobj, a2, rotation_y);
+							PAdjustAngleYS(entity, charobj, a2, rotation_y);
 							goto SET_V64X_TO_STICK_MAG;
 						}
 
@@ -273,7 +275,7 @@ LABEL_44:
 						analog_magnitude = charobj->PhysicsData.slow_down;
 					}
 
-					RotateTowards(charobj, entity, a2, rotation_y);
+					PAdjustAngleY(charobj, entity, a2, rotation_y);
 					goto SET_V64X_TO_STICK_MAG;
 				}
 				goto LABEL_67;
@@ -343,7 +345,7 @@ LABEL_44:
 	}
 	else
 	{
-		sub_4491E0(entity, a2, charobj);
+		PRotatedByGravity(entity, a2, charobj);
 		a2->field_34 = 0.0f;
 	}
 
@@ -579,7 +581,7 @@ void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0)
 
 // usercall declaration:
 // void __usercall sub_449380(EntityData1 *a1@<eax>, EntityData2 *a2@<esi>, CharObj2 *a3)
-void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3)
+void PRotatedByGravityS(EntityData1* a1, EntityData2_* a2, CharObj2_* a3)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x449380);
@@ -597,7 +599,7 @@ void sub_449380(EntityData1* a1, EntityData2_* a2, CharObj2_* a3)
 
 // usercall declaration:
 // void __usercall sub_443DF0(CharObj2 *a1@<eax>, EntityData1 *entity@<edi>, EntityData2 *a3, __int16 bams)
-void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams)
+void PAdjustAngleYQ(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x443DF0);
@@ -616,7 +618,7 @@ void sub_443DF0(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 ba
 
 // usercall declaration:
 // void __usercall sub_443E60(EntityData1 *a1@<ebx>, CharObj2 *a2@<esi>, EntityData2 *a3, unsigned __int16 a4)
-void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4)
+void PAdjustAngleYS(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x443E60);
@@ -635,7 +637,7 @@ void sub_443E60(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int
 
 // usercall declaration:
 // void __usercall RotateTowards(CharObj2 *charobj2@<edi>, EntityData1 *data1@<esi>, EntityData2 *data2, int target_angle)
-void RotateTowards(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4)
+void PAdjustAngleY(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4)
 {
 	// ReSharper disable once CppDeclaratorNeverUsed
 	auto func = reinterpret_cast<void*>(0x443C50);

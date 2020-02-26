@@ -10,7 +10,7 @@ extern "C"
 	EXPORT void Init(const char* /*path*/, const HelperFunctions& /*helperFunctions*/)
 	{
 		// use our cleaned version of this function for ease of debugging
-		WriteJump(reinterpret_cast<void*>(0x0044C270), HandleGroundVelocity);
+		WriteJump(reinterpret_cast<void*>(0x0044C270), PGetAcceleration);
 	}
 
 	EXPORT void OnInput()
