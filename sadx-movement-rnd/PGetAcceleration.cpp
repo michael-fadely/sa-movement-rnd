@@ -12,13 +12,14 @@ FunctionPointer(float, PGetAccelerationStair, (EntityData1 *data1, EntityData2_ 
 FunctionPointer(void, PConvertVector_G2P, (EntityData1 *a1, NJS_VECTOR *vd), 0x43EC00);
 FunctionPointer(void, PRotatedByGravity, (EntityData1 *a1, EntityData2_ *a2, CharObj2_ *a3), 0x4491E0);
 FastcallFunctionPointer(double, njOuterProduct, (NJS_VECTOR *a1, NJS_VECTOR *a2, NJS_VECTOR *a3), 0x7889F0);
+FunctionPointer(int, DiffAngle, (int a1, int a2), 0x004383B0);
 
 // Usercall functions - definitions below PGetAcceleration
 
 void PGetAccelerationTube(EntityData1* a1, CharObj2_* eax0, EntityData2_* arg_0);
 void PRotatedByGravityS(EntityData1* a1, EntityData2_* a2, CharObj2_* a3);
-void PAdjustAngleYQ(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, __int16 bams);
-void PAdjustAngleYS(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, unsigned __int16 a4);
+void PAdjustAngleYQ(CharObj2_* a1, EntityData1* entity, EntityData2_* a3, int16_t bams);
+void PAdjustAngleYS(EntityData1* a1, CharObj2_* a2, EntityData2_* a3, uint16_t a4);
 void PAdjustAngleY(CharObj2_* charobj2, EntityData1* data1, EntityData2_* data2, int a4);
 
 // This function is ported from the HexRays decompiler and had to be repaired. It has been cleaned up significantly.
@@ -38,8 +39,8 @@ void __cdecl PGetAcceleration(EntityData1* entity, EntityData2_* a2, CharObj2_* 
 	float v54; // st7
 	float v55; // st7
 	float v56; // st7
-	Angle angle; // [esp+8h] [ebp-2Ch]
-	NJS_VECTOR v67; // [esp+28h] [ebp-Ch]
+	Angle analog_angle; // [esp+8h] [ebp-2Ch]
+	NJS_VECTOR tnorm_cross_velocity; // [esp+28h] [ebp-Ch]
 	float a1a; // [esp+38h] [ebp+4h]
 	float a1b; // [esp+38h] [ebp+4h]
 	float a1c; // [esp+38h] [ebp+4h]
@@ -78,13 +79,13 @@ void __cdecl PGetAcceleration(EntityData1* entity, EntityData2_* a2, CharObj2_* 
 	PConvertVector_G2P(entity, &add_speed);
 
 	// aka PCheckPower
-	const bool have_analog = GetAnalog(entity, &angle, &analog_magnitude);
+	const bool have_analog = GetAnalog(entity, &analog_angle, &analog_magnitude);
 
 	NJS_VECTOR* v17 = &charobj->array_1x132->njs_vector1C;
-	njOuterProduct(v17, &a2->VelocityDirection, &v67);
+	njOuterProduct(v17, &a2->VelocityDirection, &tnorm_cross_velocity);
 
 	// unstick from the ground using the weight as the unsticking force, nullify horizontal speed
-	if (charobj->Up < 0.1f && fabs(v67.y) > 0.60000002f && charobj->Speed.x > 1.16f)
+	if (charobj->Up < 0.1f && fabs(tnorm_cross_velocity.y) > 0.60000002f && charobj->Speed.x > 1.16f)
 	{
 		add_speed_z = 0.0f;
 		add_speed.x = 0.0f;
@@ -119,15 +120,13 @@ void __cdecl PGetAcceleration(EntityData1* entity, EntityData2_* a2, CharObj2_* 
 		goto what;
 	}
 
-	if (charobj->Up >= 0.5f || charobj->Speed.x >= (float)charobj->PhysicsData.run_speed || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
+	if (charobj->Up >= 0.5f || std::abs(charobj->Speed.x) >= charobj->PhysicsData.run_speed)
 	{
 		if (charobj->Up >= 0.69999999f
-		    || charobj->Speed.x >= (float)charobj->PhysicsData.run_speed
-		    || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
+		    || std::abs(charobj->Speed.x) >= charobj->PhysicsData.run_speed)
 		{
 			if (charobj->Up >= 0.87f
-			    || charobj->Speed.x >= (float)charobj->PhysicsData.jog_speed
-			    || -charobj->PhysicsData.run_speed >= charobj->Speed.x)
+			    || std::abs(charobj->Speed.x) >= charobj->PhysicsData.jog_speed)
 			{
 				goto LABEL_15;
 			}
@@ -189,7 +188,7 @@ LABEL_44:
 		if (entity->Status & Status_OnPath)
 		{
 			// aka PGetRotationYAlongThePath
-			FollowSpline((CharObj2*)charobj, (EntityData2*)a2, entity);
+			FollowSpline(reinterpret_cast<CharObj2*>(charobj), reinterpret_cast<EntityData2*>(a2), entity);
 			rotation_y = a2->Forward.y;
 			v64.y = -0.80000001f;
 		}
@@ -204,7 +203,7 @@ LABEL_44:
 				}
 			}
 
-			rotation_y = angle;
+			rotation_y = analog_angle;
 		}
 
 		// if (c0 | c2)
@@ -227,7 +226,7 @@ LABEL_44:
 					analog_magnitude = 0.0;
 
 				LABEL_78:
-					angle_delta = BAMS_Subtract(entity->Rotation.y, rotation_y);
+					angle_delta = DiffAngle(entity->Rotation.y, rotation_y);
 
 					// if we're not moving and the delta of the stick angle and entity angle
 					// is greater than 22.5 degrees, just rotate, don't move
@@ -351,8 +350,7 @@ LABEL_44:
 
 LABEL_97:
 	if (charobj->Up < 0.70999998f
-	    && charobj->Speed.x < (float)charobj->PhysicsData.jog_speed
-	    && -charobj->PhysicsData.jog_speed < charobj->Speed.x
+	    && std::abs(charobj->Speed.x) < charobj->PhysicsData.jog_speed
 	    && !have_analog)
 	{
 		add_speed.x = add_speed.x * 10.0f;
@@ -365,8 +363,8 @@ LABEL_97:
 		a1a = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * add_speed.y;
 		add_speed.x = add_speed.x + v64.x;
 
-		if (!have_analog && (add_speed.x < (float)a1a && -a1a < add_speed.x
-		                     || add_speed.x < 0.050999999f && add_speed.x > -0.050999999f))
+		if (!have_analog && (add_speed.x < a1a && -a1a < add_speed.x
+		                     || std::abs(add_speed.x) < 0.050999999f))
 		{
 			add_speed.x = 0.0f;
 		}
@@ -382,9 +380,8 @@ LABEL_97:
 			if (charobj->Speed.x <= 0.0f)
 			{
 				if (!have_analog
-				    && charobj->Speed.x <= (float)charobj->PhysicsData.jog_speed
-				    && add_speed.x < 0.050999999f
-				    && add_speed.x > -0.050999999f
+				    && charobj->Speed.x <= charobj->PhysicsData.jog_speed
+				    && std::abs(add_speed.x) < 0.050999999f
 				    || (v52 = charobj->PhysicsData.lim_frict * a2->AccelerationMultiplier * add_speed.y + v64.x, v52 >= 0.0f))
 				{
 					v52 = 0.0f;
@@ -553,7 +550,7 @@ LABEL_145:
 LABEL_169:
 	add_speed.y = add_speed.y + v64.y;
 
-	auto add_velocity = &charobj->AddVelocity;
+	NJS_POINT3* add_velocity = &charobj->AddVelocity;
 
 	add_velocity->x = add_speed.x;
 	add_velocity->y = add_speed.y;
