@@ -85,6 +85,7 @@
   <ItemGroup>
     <ClCompile Include="PGetAcceleration.cpp" />
     <ClCompile Include="mod.cpp" />
+    <ClCompile Include="PGetAccelerationGhidra.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGetAcceleration.h" />
