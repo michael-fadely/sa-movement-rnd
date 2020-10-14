@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <algorithm>
 
+#pragma region Structures
+
 union NJS_COLOR;
 struct NJS_MESHSET;
 struct NJS_MATERIAL;
@@ -679,10 +681,9 @@ struct motionwk2
 	float frict;
 };
 
-NJS_POINT3 vG {};
+#pragma endregion
 
-using undefined8 = uint8_t;
-using longlong = int64_t;
+#pragma region Functions
 
 void PGetAccelerationAuto(taskwk* taskwk, motionwk2* motionwk2, playerwk* playerwk) {}
 
@@ -702,14 +703,23 @@ void PRotatedByGravityS(taskwk* taskwk, motionwk2* motionwk2, playerwk* playerwk
 
 void PGetRotationYAlongThePath(taskwk* taskwk, motionwk2* motionwk2, playerwk* playerwk) {}
 
-int32_t DiffAngle(int angle_a, int angle_b) { return 0; }
+int32_t DiffAngle(int32_t angle_a, int32_t angle_b) { return 0; }
 
-void PAdjustAngleYQ(taskwk* taskwk, playerwk* playerwk, int target_angle) {}
+void PAdjustAngleYQ(taskwk* taskwk, playerwk* playerwk, int32_t target_angle) {}
 
-void PAdjustAngleYS(taskwk* taskw, playerwk* playerwk, int target_angle) {}
+void PAdjustAngleYS(taskwk* taskw, playerwk* playerwk, int32_t target_angle) {}
 
-void PAdjustAngleY(taskwk* taskwk, motionwk* motionwk, playerwk* playerwk, int target_angle) {}
+void PAdjustAngleY(taskwk* taskwk, motionwk* motionwk, playerwk* playerwk, int32_t target_angle) {}
 
+#pragma endregion
+
+#pragma region Globals
+
+NJS_POINT3 vG {};
+
+#pragma endregion
+
+// TODO: clean up casts to float
 void PGetAcceleration(taskwk* const task_wk, motionwk2* const motion_wk2, playerwk* const player_wk)
 {
 	float fVar1;
@@ -720,20 +730,20 @@ void PGetAcceleration(taskwk* const task_wk, motionwk2* const motion_wk2, player
 	int32_t diff_angle;
 	motionwk2* pmVar7;
 	playerwk* ppVar9;
-	double dVar10;
-	double dVar11;
-	double dVar12;
-	double dVar13;
-	double dVar14;
-	double dVar15;
-	double dVar16;
-	double dVar17;
-	double dVar18;
-	double dVar19;
-	double dVar20;
-	double dVar21;
-	double zero_reused;
-	double zero;
+	float dVar10;       // originally double
+	float dVar11;       // originally double
+	float dVar12;       // originally double
+	float dVar13;       // originally double
+	float dVar14;       // originally double
+	float dVar15;       // originally double
+	float dVar16;       // originally double
+	float dVar17;       // originally double
+	float dVar18;       // originally double
+	float dVar19;       // originally double
+	float dVar20;       // originally double
+	float dVar21;       // originally double
+	float zero_reused;  // originally double
+	float zero;         // originally double
 	float stick_power;
 	int32_t target_angle;
 	NJS_POINT3 final_acc;
@@ -765,7 +775,7 @@ void PGetAcceleration(taskwk* const task_wk, motionwk2* const motion_wk2, player
 	final_acc.y = fVar1 * vG.y + (pmVar7->acc).y;
 	final_acc.x = fVar1 * vG.x + (pmVar7->acc).x;
 	final_acc.z = fVar1 * vG.z + (pmVar7->acc).z;
-	zero_reused = 0.00000000;
+	zero_reused = 0.00000000f;
 	dVar14 = zero_reused;
 	zero = zero_reused;
 	dVar15 = zero_reused;
@@ -773,44 +783,44 @@ void PGetAcceleration(taskwk* const task_wk, motionwk2* const motion_wk2, player
 	have_analog = PCheckPower(ptVar4, &target_angle, &stick_power);
 	njOuterProduct(&ppVar9->cstsp->tnorm, &pmVar7->spd, &tnorm_cross_velocity);
 	fVar1 = ppVar9->dotp;
-	dVar17 = 0.50000000;
-	dVar18 = 0.69999999;
-	dVar20 = 2.00000000;
-	dVar21 = 0.40000001;
-	dVar16 = 0.80000001;
-	if (((0.10000000 <= fVar1) || (std::abs(tnorm_cross_velocity.y) <= 0.60000002f)) || ((ppVar9->spd).x <= 1.15999997))
+	dVar17 = 0.50000000f;
+	dVar18 = 0.69999999f;
+	dVar20 = 2.00000000f;
+	dVar21 = 0.40000001f;
+	dVar16 = 0.80000001f;
+	if (((0.10000000f <= fVar1) || (std::abs(tnorm_cross_velocity.y) <= 0.60000002f)) || ((ppVar9->spd).x <= 1.15999997f))
 	{
-		if ((-0.40000001 <= fVar1) || ((ppVar9->spd).x <= 1.15999997))
+		if ((-0.40000001f <= fVar1) || ((ppVar9->spd).x <= 1.15999997f))
 		{
-			if ((fVar1 < -0.30000001) && (1.15999997 < (ppVar9->spd).x))
+			if ((fVar1 < -0.30000001f) && (1.15999997f < (ppVar9->spd).x))
 			{
-				final_acc.y = -((ppVar9->p).weight * 0.80000001 - final_acc.y);
+				final_acc.y = -((ppVar9->p).weight * 0.80000001f - final_acc.y);
 				goto LAB_8228731c;
 			}
-			if ((fVar1 < -0.10000000) && (1.15999997 < (ppVar9->spd).x))
+			if ((fVar1 < -0.10000000f) && (1.15999997f < (ppVar9->spd).x))
 			{
-				final_acc.y = -((ppVar9->p).weight * 0.40000001 - final_acc.y);
+				final_acc.y = -((ppVar9->p).weight * 0.40000001f - final_acc.y);
 				goto LAB_8228731c;
 			}
-			if (fVar1 < 0.50000000)
+			if (fVar1 < 0.50000000f)
 			{
 				fVar3 = (ppVar9->spd).x;
 				fVar2 = (ppVar9->p).run_speed;
 				if ((fVar3 < fVar2) && (-fVar2 < fVar3))
 				{
-					final_acc.x = final_acc.x * 4.22499990;
-					dVar13 = (double)final_acc.x;
-					dVar11 = (double)(final_acc.z * 4.22499990);
+					final_acc.x = final_acc.x * 4.22499990f;
+					dVar13 = final_acc.x;
+					dVar11 = (final_acc.z * 4.22499990f);
 					goto LAB_82287324;
 				}
 			}
-			if (0.69999999 <= fVar1)
+			if (0.69999999f <= fVar1)
 			{
 			LAB_822872d0:
-				if ((0.87000000 <= fVar1) ||
+				if ((0.87000000f <= fVar1) ||
 				    ((fVar3 = (ppVar9->spd).x, (ppVar9->p).jog_speed <= fVar3 || (fVar3 <= -(ppVar9->p).run_speed))))
 					goto LAB_8228731c;
-				dVar11 = (double)(final_acc.z * 1.39999998);
+				dVar11 = (final_acc.z * 1.39999998f);
 			}
 			else
 			{
@@ -818,39 +828,39 @@ void PGetAcceleration(taskwk* const task_wk, motionwk2* const motion_wk2, player
 				fVar2 = (ppVar9->p).run_speed;
 				if ((fVar2 <= fVar3) || (fVar3 <= -fVar2))
 					goto LAB_822872d0;
-				dVar11 = (double)(final_acc.z * 2.00000000);
+				dVar11 = (final_acc.z * 2.00000000f);
 			}
 		}
 		else
 		{
-			final_acc.y = -((ppVar9->p).weight * 5.00000000 - final_acc.y);
+			final_acc.y = -((ppVar9->p).weight * 5.00000000f - final_acc.y);
 		LAB_8228731c:
-			dVar11 = (double)final_acc.z;
+			dVar11 = final_acc.z;
 		}
-		dVar13 = (double)final_acc.x;
+		dVar13 = final_acc.x;
 	}
 	else
 	{
-		final_acc.x = (float)zero;
+		final_acc.x = zero;
 		final_acc.y = -(ppVar9->p).weight;
 		dVar11 = zero;
 		dVar13 = zero;
 	}
 LAB_82287324:
-	dVar12 = (double)(ppVar9->spd).x;
+	dVar12 = (ppVar9->spd).x;
 	if (have_analog == 0)
 	{
-		if ((double)(ppVar9->p).run_speed < dVar12)
+		if ((ppVar9->p).run_speed < dVar12)
 		{
 		LAB_82287398:
-			dVar13 = (double)(float)((double)(ppVar9->p).air_resist * dVar12 + dVar13);
+			dVar13 = (float)((ppVar9->p).air_resist * dVar12 + dVar13);
 			goto LAB_822873a0;
 		}
 	LAB_8228733c:
-		dVar10 = (double)(ppVar9->p).max_x_spd;
+		dVar10 = (ppVar9->p).max_x_spd;
 		if (dVar10 < dVar12)
 		{
-			dVar13 = (double)(float)((double)(float)(dVar12 - dVar10) * (double)(ppVar9->p).air_resist + dVar13);
+			dVar13 = (float)((float)(dVar12 - dVar10) * (ppVar9->p).air_resist + dVar13);
 			goto LAB_822873a0;
 		}
 		if (dVar12 < zero)
@@ -858,42 +868,42 @@ LAB_82287324:
 	}
 	else
 	{
-		dVar10 = (double)(ppVar9->p).max_x_spd;
-		if ((dVar12 <= dVar10) || (fVar1 <= 0.95999998))
+		dVar10 = (ppVar9->p).max_x_spd;
+		if ((dVar12 <= dVar10) || (fVar1 <= 0.95999998f))
 			goto LAB_8228733c;
-		dVar13 = (double)(float)((double)((float)(dVar12 - dVar10) * (ppVar9->p).air_resist) * 1.70000005 + dVar13);
+		dVar13 = (float)(((float)(dVar12 - dVar10) * (ppVar9->p).air_resist) * 1.70000005f + dVar13);
 	LAB_822873a0:
 		final_acc.x = (float)dVar13;
 	}
 	final_acc.y = (ppVar9->p).air_resist_y * (ppVar9->spd).y + final_acc.y;
-	dVar10 = (double)final_acc.y;
-	final_acc.z = (float)((double)(ppVar9->p).air_resist_z * (double)(ppVar9->spd).z + dVar11);
-	dVar11 = (double)final_acc.z;
-	dVar19 = 0.70999998;
+	dVar10 = final_acc.y;
+	final_acc.z = (float)((ppVar9->p).air_resist_z * (ppVar9->spd).z + dVar11);
+	dVar11 = final_acc.z;
+	dVar19 = 0.70999998f;
 	if (have_analog == 0)
 	{
-		if (0.70999998 <= fVar1)
+		if (0.70999998f <= fVar1)
 		{
 			if (dVar12 <= zero)
 			{
 				if (dVar12 < zero)
 				{
-					dVar15 = -(double)(ppVar9->p).slow_down;
+					dVar15 = -(ppVar9->p).slow_down;
 				}
 				pmVar7->force = (float)zero;
 			}
 			else
 			{
-				dVar15 = (double)(ppVar9->p).slow_down;
+				dVar15 = (ppVar9->p).slow_down;
 				pmVar7->force = (float)zero;
 			}
 		}
 		else
 		{
 			PRotatedByGravity(ptVar4, pmVar7, ppVar9);
-			dVar11 = (double)final_acc.z;
-			dVar10 = (double)final_acc.y;
-			dVar13 = (double)final_acc.x;
+			dVar11 = final_acc.z;
+			dVar10 = final_acc.y;
+			dVar13 = final_acc.x;
 			pmVar7->force = (float)zero;
 		}
 	}
@@ -901,7 +911,7 @@ LAB_82287324:
 	{
 		if ((ptVar4->flag & 0x2000U) == 0)
 		{
-			if ((fVar1 < 0.94000000) && ((ppVar9->attr & 0x800000) != 0))
+			if ((fVar1 < 0.94000000f) && ((ppVar9->attr & 0x800000) != 0))
 			{
 				PRotatedByGravityS(uVar5, lVar6, lVar8);
 			}
@@ -909,78 +919,78 @@ LAB_82287324:
 		else
 		{
 			PGetRotationYAlongThePath(uVar5, lVar6, lVar8);
-			zero_reused = -0.80000001;
+			zero_reused = -0.80000001f;
 			target_angle = (pmVar7->ang_aim).y;
 		}
-		dVar11 = (double)(ppVar9->spd).x;
-		dVar15 = (double)(ppVar9->p).max_x_spd;
+		dVar11 = (ppVar9->spd).x;
+		dVar15 = (ppVar9->p).max_x_spd;
 		if (dVar15 <= dVar11)
 		{
-			if ((dVar11 < dVar15) || (zero <= (double)ppVar9->dotp))
+			if ((dVar11 < dVar15) || (zero <= ppVar9->dotp))
 			{
-				dVar15 = (double)(float)((double)((ppVar9->p).run_accel * stick_power) * dVar21);
+				dVar15 = (float)(((ppVar9->p).run_accel * stick_power) * dVar21);
 			}
 			else
 			{
 			LAB_82287578:
-				dVar15 = (double)((ppVar9->p).run_accel * stick_power);
+				dVar15 = ((ppVar9->p).run_accel * stick_power);
 			}
 		}
 		else
 		{
-			dVar13 = (double)(ppVar9->p).jog_speed;
+			dVar13 = (ppVar9->p).jog_speed;
 			dVar15 = zero;
 			if (dVar13 <= dVar11)
 			{
-				dVar21 = (double)(ppVar9->p).run_speed;
+				dVar21 = (ppVar9->p).run_speed;
 				if (dVar21 <= dVar11)
 				{
-					if ((double)(ppVar9->p).rush_speed <= dVar11)
+					if ((ppVar9->p).rush_speed <= dVar11)
 						goto LAB_82287578;
 					fVar1 = (ppVar9->p).run_accel;
-					if (stick_power <= 0.89999998)
+					if (stick_power <= 0.89999998f)
 					{
-						dVar15 = (double)(fVar1 * stick_power * 0.30000001);
+						dVar15 = (fVar1 * stick_power * 0.30000001f);
 					}
 					else
 					{
-						dVar15 = (double)(fVar1 * stick_power);
+						dVar15 = (fVar1 * stick_power);
 					}
 				}
 				else
 				{
-					dVar13 = (double)stick_power;
+					dVar13 = stick_power;
 					if (dVar13 <= dVar18)
 					{
-						if (dVar11 < (double)(float)((double)(float)(dVar21 * dVar20) * dVar17))
+						if (dVar11 < (float)((float)(dVar21 * dVar20) * dVar17))
 						{
-							dVar15 = (double)(float)((double)(ppVar9->p).run_accel * dVar13);
+							dVar15 = (float)((ppVar9->p).run_accel * dVar13);
 						}
 					}
 					else
 					{
-						dVar15 = (double)(float)((double)(ppVar9->p).run_accel * dVar13);
+						dVar15 = (float)((ppVar9->p).run_accel * dVar13);
 					}
 				}
 			}
 			else
 			{
-				dVar18 = (double)stick_power;
+				dVar18 = stick_power;
 				if (dVar18 <= dVar17)
 				{
-					if (dVar11 < (double)(float)(dVar13 * dVar21))
+					if (dVar11 < (float)(dVar13 * dVar21))
 					{
-						dVar15 = (double)(float)((double)(ppVar9->p).run_accel * dVar18);
+						dVar15 = (float)((ppVar9->p).run_accel * dVar18);
 					}
 				}
 				else
 				{
-					dVar15 = (double)(float)((double)(ppVar9->p).run_accel * dVar18);
+					dVar15 = (float)((ppVar9->p).run_accel * dVar18);
 				}
 			}
 		}
 		diff_angle = DiffAngle((ptVar4->ang).y, target_angle);
-		dVar18 = (double)(ppVar9->spd).x;
+		dVar18 = (ppVar9->spd).x;
 		if ((dVar18 == zero) && (0x1000 < diff_angle))
 		{
 			(pmVar7->ang_aim).y = target_angle;
@@ -989,17 +999,17 @@ LAB_82287324:
 		}
 		else
 		{
-			dVar20 = (double)(ppVar9->p).jog_speed;
-			if ((dVar18 < (double)(float)((double)(float)((double)(ppVar9->p).run_speed + dVar20) * dVar17)) ||
+			dVar20 = (ppVar9->p).jog_speed;
+			if ((dVar18 < (float)((float)((ppVar9->p).run_speed + dVar20) * dVar17)) ||
 			    (diff_angle < 0x1001))
 			{
 				if ((dVar18 < dVar20) || (0xfff < diff_angle))
 				{
-					if ((dVar18 < (double)(ppVar9->p).dash_speed) || ((ppVar9->attr & 0x800000) == 0))
+					if ((dVar18 < (ppVar9->p).dash_speed) || ((ppVar9->attr & 0x800000) == 0))
 					{
-						if (((dVar20 <= dVar18) && (dVar18 <= (double)(ppVar9->p).rush_speed)) && (0x2000 < diff_angle))
+						if (((dVar20 <= dVar18) && (dVar18 <= (ppVar9->p).rush_speed)) && (0x2000 < diff_angle))
 						{
-							dVar15 = (double)(float)(dVar15 * dVar16);
+							dVar15 = (float)(dVar15 * dVar16);
 						}
 						(pmVar7->ang_aim).y = target_angle;
 						goto LAB_82287680;
@@ -1016,41 +1026,41 @@ LAB_82287324:
 			else
 			{
 				(pmVar7->ang_aim).y = target_angle;
-				dVar15 = (double)(ppVar9->p).slow_down;
+				dVar15 = (ppVar9->p).slow_down;
 			LAB_82287680:
 				PAdjustAngleY(ptVar4, (motionwk*)pmVar7, ppVar9, target_angle);
 			}
 		}
-		dVar11 = (double)final_acc.z;
-		dVar10 = (double)final_acc.y;
-		dVar13 = (double)final_acc.x;
+		dVar11 = final_acc.z;
+		dVar10 = final_acc.y;
+		dVar13 = final_acc.x;
 		pmVar7->force = (float)dVar15;
 	}
-	if ((double)ppVar9->dotp < dVar19)
+	if (ppVar9->dotp < dVar19)
 	{
 		fVar1 = (ppVar9->spd).x;
 		fVar3 = (ppVar9->p).jog_speed;
 		if (((fVar3 <= fVar1) || (fVar1 <= -fVar3)) || (have_analog != 0))
 			goto LAB_822876ec;
-		final_acc.z = (float)(dVar11 * 10.00000000);
-		dVar11 = (double)final_acc.z;
-		dVar16 = (double)(float)(dVar13 * 10.00000000);
+		final_acc.z = (float)(dVar11 * 10.00000000f);
+		dVar11 = final_acc.z;
+		dVar16 = (float)(dVar13 * 10.00000000f);
 	LAB_82287938:
 		final_acc.x = (float)dVar16;
 	}
 	else
 	{
 	LAB_822876ec:
-		dVar16 = (double)(ppVar9->spd).x;
+		dVar16 = (ppVar9->spd).x;
 		if (dVar16 != zero)
 		{
 			if (zero <= dVar15)
 			{
-				dVar17 = (double)(float)((double)((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
-				if (((dVar16 < zero) && (dVar13 < 0.05100000)) && (-0.05100000 < dVar13))
+				dVar17 = (float)(((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
+				if (((dVar16 < zero) && (dVar13 < 0.05100000f)) && (-0.05100000f < dVar13))
 				{
 					final_acc.x = (float)(dVar13 + dVar15);
-					if ((double)(float)((double)final_acc.x * dVar15) < zero)
+					if ((float)(final_acc.x * dVar15) < zero)
 					{
 						final_acc.x = (float)zero;
 					}
@@ -1065,7 +1075,7 @@ LAB_82287324:
 					}
 					goto LAB_82287934;
 				}
-				dVar16 = (double)(float)(dVar13 + dVar15);
+				dVar16 = (float)(dVar13 + dVar15);
 				if (dVar17 < dVar16)
 				{
 					pmVar7->accel = (float)(dVar16 - dVar17);
@@ -1078,9 +1088,9 @@ LAB_82287324:
 				{
 					if (dVar16 <= zero)
 					{
-						if (((((have_analog == 0) && (dVar16 <= (double)(ppVar9->p).jog_speed)) && (dVar13 < 0.05100000)) &&
-						     (-0.05100000 < dVar13)) ||
-						    (dVar16 = (double)(float)((double)((ppVar9->p).lim_frict * pmVar7->frict) * dVar10 + dVar15),
+						if (((((have_analog == 0) && (dVar16 <= (ppVar9->p).jog_speed)) && (dVar13 < 0.05100000f)) &&
+						     (-0.05100000f < dVar13)) ||
+						    (dVar16 = (float)(((ppVar9->p).lim_frict * pmVar7->frict) * dVar10 + dVar15),
 						     zero <= dVar16))
 						{
 							dVar16 = zero;
@@ -1088,8 +1098,8 @@ LAB_82287324:
 					}
 					else
 					{
-						dVar16 = (double)(float)(dVar13 + dVar15);
-						if ((double)(float)((double)(float)(dVar13 + dVar15) * dVar15) < zero)
+						dVar16 = (float)(dVar13 + dVar15);
+						if ((float)((float)(dVar13 + dVar15) * dVar15) < zero)
 						{
 							dVar16 = zero;
 						}
@@ -1098,25 +1108,25 @@ LAB_82287324:
 				else
 				{
 					if (((zero <= dVar10) ||
-					     (dVar17 = (double)(float)((double)((ppVar9->p).grd_frict * pmVar7->frict) * dVar10), dVar17 <= zero)) ||
+					     (dVar17 = (float)(((ppVar9->p).grd_frict * pmVar7->frict) * dVar10), dVar17 <= zero)) ||
 					    (-dVar15 <= dVar17))
 					{
 						if (have_analog == 0)
 						{
 							fVar1 = (ppVar9->p).jog_speed;
 						joined_r0x82287918:
-							if (((dVar16 <= (double)fVar1) && (dVar13 < 0.05100000)) && (-0.05100000 < dVar13))
+							if (((dVar16 <= fVar1) && (dVar13 < 0.05100000f)) && (-0.05100000f < dVar13))
 							{
 								final_acc.x = (float)zero;
 								goto LAB_8228793c;
 							}
 						}
 					LAB_82287934:
-						dVar16 = (double)(float)(dVar13 + dVar15);
+						dVar16 = (float)(dVar13 + dVar15);
 					}
 					else
 					{
-						dVar16 = (double)(float)(dVar13 + dVar15);
+						dVar16 = (float)(dVar13 + dVar15);
 						if ((zero <= dVar16) || (-dVar17 <= dVar16))
 						{
 							if ((zero < dVar16) && (dVar17 < dVar16))
@@ -1136,17 +1146,17 @@ LAB_82287324:
 			goto LAB_82287938;
 		}
 		final_acc.x = (float)(dVar13 + dVar15);
-		fVar1 = (float)((double)((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
+		fVar1 = (float)(((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
 		if ((have_analog == 0) &&
-		    (((final_acc.x < fVar1 && (-fVar1 < final_acc.x)) || ((final_acc.x < 0.05100000 && (-0.05100000 < final_acc.x))))))
+		    (((final_acc.x < fVar1 && (-fVar1 < final_acc.x)) || ((final_acc.x < 0.05100000f && (-0.05100000f < final_acc.x))))))
 		{
 			final_acc.x = (float)zero;
 		}
 	}
 LAB_8228793c:
-	if ((double)(ppVar9->spd).z == zero)
+	if ((ppVar9->spd).z == zero)
 	{
-		dVar14 = (double)(float)((double)((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
+		dVar14 = (float)(((ppVar9->p).lim_frict * pmVar7->frict) * dVar10);
 		if ((dVar11 < dVar14) && (-dVar14 < dVar11))
 		{
 			final_acc.z = (float)zero;
@@ -1157,7 +1167,7 @@ LAB_8228793c:
 		dVar15 = zero;
 		if (dVar10 < zero)
 		{
-			dVar15 = (double)(float)((double)((ppVar9->p).grd_frict_z * pmVar7->frict) * dVar10);
+			dVar15 = (float)(((ppVar9->p).grd_frict_z * pmVar7->frict) * dVar10);
 		}
 		if ((ppVar9->attr & 4) == 0)
 		{
@@ -1172,8 +1182,8 @@ LAB_8228793c:
 			{
 				dVar14 = -dVar15;
 			}
-			dVar15 = (double)(float)(dVar11 + dVar14);
-			if (((dVar11 != zero) && (dVar14 != zero)) && ((double)(float)(dVar15 * dVar11) < zero))
+			dVar15 = (float)(dVar11 + dVar14);
+			if (((dVar11 != zero) && (dVar14 != zero)) && ((float)(dVar15 * dVar11) < zero))
 			{
 				dVar15 = zero;
 			}
@@ -1184,15 +1194,15 @@ LAB_8228793c:
 			if (dVar11 <= zero)
 			{
 				dVar14 = dVar11;
-				if ((dVar11 < zero) && (dVar14 = (double)(float)(dVar11 + dVar15), zero < (double)(float)(dVar11 + dVar15)))
+				if ((dVar11 < zero) && (dVar14 = (float)(dVar11 + dVar15), zero < (float)(dVar11 + dVar15)))
 				{
 					dVar14 = zero;
 				}
 			}
 			else
 			{
-				dVar14 = (double)(float)(dVar11 - dVar15);
-				if ((double)(float)(dVar11 - dVar15) < zero)
+				dVar14 = (float)(dVar11 - dVar15);
+				if ((float)(dVar11 - dVar15) < zero)
 				{
 					final_acc.z = (float)zero;
 					goto LAB_82287a28;
